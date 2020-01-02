@@ -1,0 +1,15 @@
+#boardContainer{
+    border: 1px solid black;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 50px auto;
+}
+.cell{
+    flex: 0 0 32%;
+    height: 32%;
+    border: 1px solid blue;
+    margin-bottom: 5px;
+}
