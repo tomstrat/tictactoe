@@ -25,12 +25,14 @@ const Gameboard = (() => {
     };
     const placeToken = () => {
 
-        if(e.innerHTML != "" || undefined){
-            e.innerHTML = DisplayController.getPlayerTurn().getToken();
+        if(this.innerHTML != "" || undefined){
+            grid[this.dataset.x][this.dataset.y] = DisplayController.getPlayerTurn().getToken();
+            renderBoard();
+            DisplayController.checkWin();
+            DisplayController.changeTurn();
+        } else {
+            console.log("something exists here already")
         };
-        DisplayController.checkWin();
-
-        DisplayController.changeTurn();
     };
 
     return{updateCell, checkValidMove, renderBoard, queryGrid, placeToken};
@@ -38,10 +40,14 @@ const Gameboard = (() => {
 
 const DisplayController = (() => {
     const setup = () => {
+
+        Gameboard.renderBoard();
         let cells = document.querySelectorAll(".cell");
         cells.forEach(cell => {
-            cell.addEventListener(e, Gameboard.placeToken());
+            cell.addEventListener("click", Gameboard.placeToken);
         });
+        //random player start x just for now
+        playerX.toggleTurn(true);
     };
     const changeTurn = () =>{
         if(playerX.getTurn()==true){
@@ -59,9 +65,9 @@ const DisplayController = (() => {
         return playerX.getTurn() = true ? playerX : playerO;
     };
 
-    return{changeTurn, checkWin, getPlayerTurn};
+    return{changeTurn, checkWin, getPlayerTurn, setup};
 })();
 
 const playerX = PlayerFactory("X");
 const playerO = PlayerFactory("O");
-Gameboard.renderBoard();
+DisplayController.setup();
