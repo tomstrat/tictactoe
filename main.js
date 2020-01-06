@@ -23,13 +23,26 @@ const Gameboard = (() => {
             cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
         });
     };
-    return{updateCell, checkValidMove, renderBoard, queryGrid};
+    const placeToken = () => {
+
+        if(e.innerHTML != "" || undefined){
+            e.innerHTML = DisplayController.getPlayerTurn().getToken();
+        };
+        DisplayController.checkWin();
+
+        DisplayController.changeTurn();
+    };
+
+    return{updateCell, checkValidMove, renderBoard, queryGrid, placeToken};
 })();
 
 const DisplayController = (() => {
     const setup = () => {
-        
-    }
+        let cells = document.querySelectorAll(".cell");
+        cells.forEach(cell => {
+            cell.addEventListener(e, Gameboard.placeToken());
+        });
+    };
     const changeTurn = () =>{
         if(playerX.getTurn()==true){
             playerX.toggleTurn(false);
@@ -42,12 +55,11 @@ const DisplayController = (() => {
     const checkWin = () => {
 
     };
-    //this returns what to place in a cell X or O
-    const returnToken = (turn) =>{
-
+    const getPlayerTurn = () => {
+        return playerX.getTurn() = true ? playerX : playerO;
     };
 
-    return{changeTurn, checkWin};
+    return{changeTurn, checkWin, getPlayerTurn};
 })();
 
 const playerX = PlayerFactory("X");
