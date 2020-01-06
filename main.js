@@ -1,5 +1,5 @@
 const PlayerFactory = (xory) => {
-    let isTurn = fasle;
+    let isTurn = false;
     const token = xory;
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
@@ -19,9 +19,9 @@ const Gameboard = (() => {
     };
     const renderBoard = () => {
         cells.forEach(cell =>{
-            cell.innerHTML = 
-        })
-    }
+            cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
+        });
+    };
     return{updateCell, checkValidMove, checkWin, renderBoard};
 })();
 
@@ -45,3 +45,4 @@ const DisplayController = (() => {
 
 const playerX = PlayerFactory("X");
 const playerO = PlayerFactory("O");
+Gameboard.renderBoard();
