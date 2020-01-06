@@ -1,6 +1,6 @@
 body{
     background-color: salmon;
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #boardContainer{
@@ -18,4 +18,8 @@ body{
     height: 32%;
     background-color: salmon;
     margin-bottom: 5px;
+    font-size: 60px;
+    color: white;
+    text-align: center;
+    line-height: 128px;
 }
