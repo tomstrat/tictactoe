@@ -1,6 +1,7 @@
 const PlayerFactory = (xory) => {
     let isTurn = false;
     const token = xory;
+
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
     const getToken = () => token;
@@ -11,13 +12,6 @@ const Gameboard = (() => {
     let grid = [["","",""],["","",""],["","",""]];
     let cells = document.querySelectorAll(".cell");
 
-    const updateCell = (x, y, player) => grid[x][y] = player;
-    const checkValidMove = (x, y) => {
-        grid[x][y] = undefined ? true:false;
-    };
-    const queryGrid = (x, y) => {
-        grid[x][y];
-    }
     const renderBoard = (checkWin) => {
         cells.forEach(cell =>{
             cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
@@ -37,7 +31,7 @@ const Gameboard = (() => {
         grid = [["","",""],["","",""],["","",""]];
     }
 
-    return{updateCell, checkValidMove, renderBoard, queryGrid, placeToken, resetBoard};
+    return{renderBoard, placeToken, resetBoard};
 })();
 
 const DisplayController = (() => {
@@ -69,9 +63,11 @@ const DisplayController = (() => {
         return playerX.getTurn() == true ? playerX : playerO;
     };
 
+    //Make Player Objects
     const playerX = PlayerFactory("X");
     const playerO = PlayerFactory("O");
 
+    //Initial Setup
     setup();
     return{changeTurn, checkWin, getPlayerTurn};
 })();
