@@ -33,15 +33,20 @@ const Gameboard = (() => {
             console.log("something exists here already")
         };
     };
+    const resetBoard = () => {
+        grid = [["","",""],["","",""],["","",""]];
+    }
 
-    return{updateCell, checkValidMove, renderBoard, queryGrid, placeToken};
+    return{updateCell, checkValidMove, renderBoard, queryGrid, placeToken, resetBoard};
 })();
 
 const DisplayController = (() => {
     const setup = () => {
-
+        Gameboard.resetBoard();
         Gameboard.renderBoard();
         let cells = document.querySelectorAll(".cell");
+        let resetBtn = document.getElementById("resetBtn");
+        resetBtn.addEventListener("click", setup);
         cells.forEach(cell => {
             cell.addEventListener("click", Gameboard.placeToken);
         });
@@ -64,9 +69,10 @@ const DisplayController = (() => {
         return playerX.getTurn() == true ? playerX : playerO;
     };
 
-    return{changeTurn, checkWin, getPlayerTurn, setup};
+    const playerX = PlayerFactory("X");
+    const playerO = PlayerFactory("O");
+
+    setup();
+    return{changeTurn, checkWin, getPlayerTurn};
 })();
 
-const playerX = PlayerFactory("X");
-const playerO = PlayerFactory("O");
-DisplayController.setup();
