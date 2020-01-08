@@ -21,7 +21,9 @@ const Gameboard = (() => {
         if(e.target.innerHTML == ""){
             grid[e.target.dataset.x][e.target.dataset.y] = DisplayController.getPlayerTurn().getToken();
             renderBoard();
-            DisplayController.checkWin();
+            if(checkWin( DisplayController.getPlayerTurn())){
+                DisplayController.announceWin();
+            };
             DisplayController.changeTurn();
         } else {
             console.log("something exists here already")
@@ -29,6 +31,29 @@ const Gameboard = (() => {
     };
     const resetBoard = () => {
         grid = [["","",""],["","",""],["","",""]];
+    }
+    const checkWin = (xory) => {
+        //REFACTOR WITH FUNCTIONAL MAP OR FILTER?
+        let gameOver = false;
+
+        lineCheck([[0,0],[0,1],[0,2]]);
+        lineCheck([[1,0],[1,1],[1,2]]);
+        lineCheck([[2,0],[2,1],[2,2]]);
+        lineCheck([[0,0],[1,0],[2,0]]);
+        lineCheck([[0,1],[1,1],[2,1]]);
+        lineCheck([[0,2],[1,2],[2,2]]);
+        lineCheck([[0,0],[1,1],[2,2]]);
+        lineCheck([[0,2],[1,1],[2,0]]);
+        
+
+        function lineCheck(cells){
+            if (grid[cells[0][0]][cells[0][1]] == xory &&
+                grid[cells[1][0]][cells[1][1]] == xory &&
+                grid[cells[2][0]][cells[2][1]] == xory){
+                    gameOver = true;
+            };
+        }
+        return gameOver == true ? true : false;
     }
 
     return{renderBoard, placeToken, resetBoard};
@@ -56,8 +81,8 @@ const DisplayController = (() => {
             playerX.toggleTurn(true);
         }
     };
-    const checkWin = () => {
-
+    const announceWin = (winner) => {
+        console.log("you win!");
     };
     const getPlayerTurn = () => {
         return playerX.getTurn() == true ? playerX : playerO;
@@ -69,6 +94,6 @@ const DisplayController = (() => {
 
     //Initial Setup
     setup();
-    return{changeTurn, checkWin, getPlayerTurn};
+    return{changeTurn, announceWin, getPlayerTurn};
 })();
 
