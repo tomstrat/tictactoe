@@ -17,13 +17,19 @@ body{
     Width: 400px;
     margin: 20px auto;
 }
+#overlayContainer{
+    position:relative;
+    height: 100px;
+    width: 410px;
+    margin: 0 auto;
+}
 #winOverlay{
     width: 410px;
     height: 410px;
     margin: 0 auto;
     background-color: rgba(0, 0, 0, 0.3);
-    position: relative;
-    bottom: 430px;
+    position: absolute;
+    bottom: 120px;
     display: none;
 }
 #winOverlay span{
