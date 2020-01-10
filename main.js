@@ -4,8 +4,7 @@ const PlayerFactory = (xory) => {
 
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
-    const getToken = () => token;
-    return {toggleTurn, getTurn, getToken};
+    return {toggleTurn, getTurn};
 };
 
 const Gameboard = (() => {
@@ -19,7 +18,7 @@ const Gameboard = (() => {
     };
     const placeToken = (e) => {
         if(e.target.innerHTML == ""){
-            grid[e.target.dataset.x][e.target.dataset.y] = DisplayController.getPlayerTurn().getToken();
+            grid[e.target.dataset.x][e.target.dataset.y] = DisplayController.getPlayerTurn();
             renderBoard();
             if(checkWin( DisplayController.getPlayerTurn())){
                 DisplayController.announceWin();
@@ -47,7 +46,6 @@ const Gameboard = (() => {
         
 
         function lineCheck(cells){
-            console.log(grid[cells[0][0]][cells[0][1]]);
             if (grid[cells[0][0]][cells[0][1]] == xory &&
                 grid[cells[1][0]][cells[1][1]] == xory &&
                 grid[cells[2][0]][cells[2][1]] == xory){
@@ -86,7 +84,7 @@ const DisplayController = (() => {
         console.log("you win!");
     };
     const getPlayerTurn = () => {
-        return playerX.getTurn() == true ? playerX : playerO;
+        return playerX.getTurn() == true ? "X" : "O";
     };
 
     //Make Player Objects
