@@ -10,8 +10,14 @@ const PlayerFactory = (xory) => {
 const Gameboard = (() => {
     let grid = [["","",""],["","",""],["","",""]];
     let cells = document.querySelectorAll(".cell");
+    let overlay = document.getElementById("winOverlay");
 
-    const renderBoard = (checkWin) => {
+    const toggleOverlay = (toggle, winner) => {
+        overlay.style.display = toggle ? "block" : "none";
+        overlay.firstElementChild.innerHTML = `${winner} Wins the game!`;
+    };
+
+    const renderBoard = () => {
         cells.forEach(cell =>{
             cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
         });
@@ -30,6 +36,7 @@ const Gameboard = (() => {
     };
     const resetBoard = () => {
         grid = [["","",""],["","",""],["","",""]];
+        toggleOverlay(false, "Noone")
     }
     const checkWin = (xory) => {
         //REFACTOR WITH FUNCTIONAL MAP OR FILTER?
@@ -55,7 +62,7 @@ const Gameboard = (() => {
         return gameOver == true ? true : false;
     }
 
-    return{renderBoard, placeToken, resetBoard};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay};
 })();
 
 const DisplayController = (() => {
@@ -82,6 +89,7 @@ const DisplayController = (() => {
     };
     const announceWin = (winner) => {
         console.log("you win!");
+        Gameboard.toggleOverlay(true, getPlayerTurn());
     };
     const getPlayerTurn = () => {
         return playerX.getTurn() == true ? "X" : "O";
