@@ -47,10 +47,11 @@ const Gameboard = (() => {
         
 
         function lineCheck(cells){
+            console.log(grid[cells[0][0]][cells[0][1]]);
             if (grid[cells[0][0]][cells[0][1]] == xory &&
                 grid[cells[1][0]][cells[1][1]] == xory &&
                 grid[cells[2][0]][cells[2][1]] == xory){
-                    gameOver = true;
+                gameOver = true;
             };
         }
         return gameOver == true ? true : false;
