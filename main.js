@@ -111,3 +111,11 @@ const DisplayController = (() => {
     return{changeTurn, announceWin, getPlayerTurn};
 })();
 
+// FUNCTIONS FOR AI
+// DisplayController: aiTurn
+// DisplayController: Check on changeTurn for pass to ai or not
+// Player: isAI? Bool that will be checked.
+// AI Play button to switch a player to AI
+// AI button to change to 2 Player when hit (toggles)
+// MAKE AI ALGORITHM....
+
