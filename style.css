@@ -19,6 +19,17 @@ body{
     Width: 400px;
     margin: 20px auto;
 }
+#turnDisplay{
+    text-align: center;
+    display: inline-block;
+    width: 150px;
+    font-size: 20px;
+}
+#xory{
+    font-weight: 900;
+    color: rgb(240, 101, 194);
+    font-size: 20px;
+}
 #overlayContainer{
     position:relative;
     height: 100px;

@@ -1,5 +1,6 @@
 const PlayerFactory = (xory) => {
     let isTurn = false;
+    //this is never read but useful to have for future dev.
     const token = xory;
 
     const toggleTurn = bool => isTurn = bool;
@@ -16,7 +17,6 @@ const Gameboard = (() => {
         overlay.style.display = toggle ? "block" : "none";
         overlay.firstElementChild.innerHTML = `${winner} Wins the game!`;
     };
-
     const renderBoard = () => {
         cells.forEach(cell =>{
             cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
@@ -73,6 +73,8 @@ const Gameboard = (() => {
 })();
 
 const DisplayController = (() => {
+    const docXory = document.getElementById("xory");
+
     const setup = () => {
         Gameboard.resetBoard();
         Gameboard.renderBoard();
@@ -80,18 +82,20 @@ const DisplayController = (() => {
         resetBtn.addEventListener("click", setup);
         //random player start x just for now
         playerX.toggleTurn(true);
+        docXory.innerHTML = "X";
     };
     const changeTurn = () =>{
         if(playerX.getTurn()==true){
             playerX.toggleTurn(false);
             playerO.toggleTurn(true);
+            docXory.innerHTML = "O";
         } else {
             playerO.toggleTurn(false);
             playerX.toggleTurn(true);
+            docXory.innerHTML = "X";
         }
     };
     const announceWin = (winner) => {
-        console.log("you win!");
         Gameboard.toggleOverlay(true, getPlayerTurn());
     };
     const getPlayerTurn = () => {
