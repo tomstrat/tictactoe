@@ -37,6 +37,12 @@ const Gameboard = (() => {
     const resetBoard = () => {
         grid = [["","",""],["","",""],["","",""]];
         toggleOverlay(false, "Noone")
+        //random colour for cells
+        cells.forEach(cell => {
+            ranGrey = (Math.random() * (0.6 - 0.3) + 0.3).toFixed(2);
+            cell.style.backgroundColor = `rgb(0,0,0,${ranGrey})`;
+        });
+
     }
     const checkWin = (xory) => {
         //REFACTOR WITH FUNCTIONAL MAP OR FILTER?

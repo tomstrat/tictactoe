@@ -1,11 +1,13 @@
 body{
-    background-color: salmon;
+    background-color: #f0f0f0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #boardContainer{
-    border: 5px solid sienna;
-    background-color: sienna;
+    border-style: solid;
+    border-color: #b3b3b3;
+    border-width: 5px 2px 0px 3px;
+    background-color: #b3b3b3;
     width: 400px;
     height: 400px;
     display: flex;
@@ -42,7 +44,6 @@ body{
 .cell{
     flex: 0 0 32%;
     height: 32%;
-    background-color: salmon;
     margin-bottom: 5px;
     font-size: 60px;
     color: white;
