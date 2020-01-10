@@ -22,21 +22,22 @@ body{
 #overlayContainer{
     position:relative;
     height: 100px;
-    width: 410px;
+    width: 405px;
     margin: 0 auto;
 }
 #winOverlay{
-    width: 410px;
-    height: 410px;
+    width: 405px;
+    height: 405px;
     margin: 0 auto;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.7);
     position: absolute;
     bottom: 120px;
     display: none;
 }
 #winOverlay span{
-    font-size: 30px;
-    color: white;
+    font-size: 50px;
+    font-family: "Anton", sans-serif;
+    color: rgb(240, 101, 194);
     text-align: center;
     line-height: 410px;
     display: block;
@@ -52,7 +53,7 @@ body{
 }
 button{
     border: 2px solid black;
-    background-color: olivedrab;
+    background-color: rgb(240, 101, 194);
     color: white;
     width: 120px;
     height: 50px;

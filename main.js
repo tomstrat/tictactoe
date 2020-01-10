@@ -39,6 +39,7 @@ const Gameboard = (() => {
         toggleOverlay(false, "Noone")
         //random colour for cells
         cells.forEach(cell => {
+            cell.addEventListener("click", placeToken);
             ranGrey = (Math.random() * (0.6 - 0.3) + 0.3).toFixed(2);
             cell.style.backgroundColor = `rgb(0,0,0,${ranGrey})`;
         });
@@ -75,12 +76,8 @@ const DisplayController = (() => {
     const setup = () => {
         Gameboard.resetBoard();
         Gameboard.renderBoard();
-        let cells = document.querySelectorAll(".cell");
         let resetBtn = document.getElementById("resetBtn");
         resetBtn.addEventListener("click", setup);
-        cells.forEach(cell => {
-            cell.addEventListener("click", Gameboard.placeToken);
-        });
         //random player start x just for now
         playerX.toggleTurn(true);
     };
