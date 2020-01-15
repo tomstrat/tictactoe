@@ -10,7 +10,7 @@ const PlayerFactory = (xory) => {
 
 //This could inherit from PlayerFactory 
 const aiFactory = (xory) => {
-    let isTurn = fasle;
+    let isTurn = false;
     const token = xory;
 
     const toggleTurn = bool => isTurn = bool;
@@ -18,7 +18,12 @@ const aiFactory = (xory) => {
     const makeDecision = () => {
         let x, y;
 
+        //Block Win
+        Gameboard.checkBlock();
         
+        //Human played Center First
+
+        //Human played Corner First
 
 
 
@@ -41,6 +46,36 @@ const Gameboard = (() => {
             cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
         });
     };
+    const checkBlock = () => {
+        //This should tell the AI where X is and determine if it should block
+        let locations = [];
+        let danger = false;
+        for(let i=0; i<grid.length;i++){
+            for(let j=0; j<grid[i].length;j++){
+                if(grid[i][j] == "X"){
+                    locations.push([i,j]);
+                }
+            }
+        }
+        //Loop through locations and query their neighbours to see if there is Danger and block required
+        locations.forEach((x, y) =>{
+            danger = checkNeighbours(x, y);
+            if(danger){
+                break;
+            }
+        });
+        return danger;
+    }
+    const checkNeighbours = (x, y) => {
+        if(grid[(x + 1) % 3][y] == "X" ||
+           grid[(x + 3) % 3][y] == "X" ||
+           grid[x][(y + 1) % 3] == "X" ||
+           grid[x][(y + 3) % 3] == "X"){
+            return true;
+        } else {
+            return false;
+        }
+    }
     const aiPlaceToken = (id) => {
         grid[id[0]][id[1]] = DisplayController.getPlayerTurn();
         renderBoard();
@@ -96,7 +131,7 @@ const Gameboard = (() => {
         return gameOver == true ? true : false;
     }
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlock};
 })();
 
 const DisplayController = (() => {
