@@ -16,10 +16,13 @@ const aiFactory = (xory) => {
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
     const makeDecision = () => {
+        let x, y;
+
+        
 
 
 
-
+        Gameboard.aiPlaceToken([x,y])
     };
     return {toggleTurn, getTurn, makeDecision};
 }
@@ -38,6 +41,14 @@ const Gameboard = (() => {
             cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
         });
     };
+    const aiPlaceToken = (id) => {
+        grid[id[0]][id[1]] = DisplayController.getPlayerTurn();
+        renderBoard();
+        if(checkWin( DisplayController.getPlayerTurn())){
+            DisplayController.announceWin();
+        };
+        DisplayController.changeTurn();
+    }
     const placeToken = (e) => {
         if(e.target.innerHTML == ""){
             grid[e.target.dataset.x][e.target.dataset.y] = DisplayController.getPlayerTurn();
@@ -85,17 +96,20 @@ const Gameboard = (() => {
         return gameOver == true ? true : false;
     }
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken};
 })();
 
 const DisplayController = (() => {
     const docXory = document.getElementById("xory");
+    const resetBtn = document.getElementById("resetBtn");
+    const aiBtn = document.getElementById("aiBtn");
+    let aiGame = false;
 
     const setup = () => {
         Gameboard.resetBoard();
         Gameboard.renderBoard();
-        let resetBtn = document.getElementById("resetBtn");
         resetBtn.addEventListener("click", setup);
+        aiBtn.addEventListener("click", makeAiGame);
         //random player start x just for now
         playerX.toggleTurn(true);
         docXory.innerHTML = "X";
@@ -104,9 +118,18 @@ const DisplayController = (() => {
         if(playerX.getTurn()==true){
             playerX.toggleTurn(false);
             playerO.toggleTurn(true);
-            docXory.innerHTML = "O";
+            playerAI.toggleTurn(true);
+
+            if(aiGame){
+                docXory.innerHTML = "AI";
+                playerAI.makeDecision();
+            } else {
+                docXory.innerHTML = "O";
+            }
+
         } else {
             playerO.toggleTurn(false);
+            playerAI.toggleTurn(false);
             playerX.toggleTurn(true);
             docXory.innerHTML = "X";
         }
@@ -117,10 +140,15 @@ const DisplayController = (() => {
     const getPlayerTurn = () => {
         return playerX.getTurn() == true ? "X" : "O";
     };
+    const makeAiGame = () => {
+        aiGame = true;
+        // add button switch
+    };
 
     //Make Player Objects
     const playerX = PlayerFactory("X");
     const playerO = PlayerFactory("O");
+    const playerAI = aiFactory("O");
 
     //Initial Setup
     setup();
