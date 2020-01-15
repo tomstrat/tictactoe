@@ -8,6 +8,22 @@ const PlayerFactory = (xory) => {
     return {toggleTurn, getTurn};
 };
 
+//This could inherit from PlayerFactory 
+const aiFactory = (xory) => {
+    let isTurn = fasle;
+    const token = xory;
+
+    const toggleTurn = bool => isTurn = bool;
+    const getTurn = () => isTurn;
+    const makeDecision = () => {
+
+
+
+
+    };
+    return {toggleTurn, getTurn, makeDecision};
+}
+
 const Gameboard = (() => {
     let grid = [["","",""],["","",""],["","",""]];
     let cells = document.querySelectorAll(".cell");
