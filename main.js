@@ -17,17 +17,21 @@ const aiFactory = (xory) => {
     const getTurn = () => isTurn;
     const makeDecision = () => {
         let x, y;
+        let blockWhere = [];
 
-        //Block Win
-        Gameboard.checkBlock();
+        //Check first if a block is needed to survive
+        if(blockWhere = Gameboard.checkForBlock()[0]){
+            console.log("I Blocked " + blockWhere[0])
+            Gameboard.aiPlaceToken(blockWhere[0]);
+        };
         
         //Human played Center First
-
+        DisplayController.changeTurn();
         //Human played Corner First
 
 
 
-        Gameboard.aiPlaceToken([x,y])
+        // Gameboard.aiPlaceToken([x,y])
     };
     return {toggleTurn, getTurn, makeDecision};
 }
@@ -43,13 +47,14 @@ const Gameboard = (() => {
     };
     const renderBoard = () => {
         cells.forEach(cell =>{
-            cell.innerHTML = grid[cell.dataset.x][cell.dataset.y];
+            cell.innerHTML = grid[cell.dataset.y][cell.dataset.x];
         });
     };
-    const checkBlock = () => {
+    const checkForBlock = () => {
         //This should tell the AI where X is and determine if it should block
         let locations = [];
-        let danger = false;
+        let danger = [false];
+        //Cycle through grid to find locations player has played.
         for(let i=0; i<grid.length;i++){
             for(let j=0; j<grid[i].length;j++){
                 if(grid[i][j] == "X"){
@@ -58,24 +63,38 @@ const Gameboard = (() => {
             }
         }
         //Loop through locations and query their neighbours to see if there is Danger and block required
-        locations.forEach((x, y) =>{
-            danger = checkNeighbours(x, y);
-            if(danger){
-                break;
+        locations.forEach((arr) =>{
+            danger = checkNeighbours(arr[0], arr[1]);
+            if(danger[0]){
+                return;
             }
         });
         return danger;
-    }
+    };
     const checkNeighbours = (x, y) => {
-        if(grid[(x + 1) % 3][y] == "X" ||
-           grid[(x + 3) % 3][y] == "X" ||
-           grid[x][(y + 1) % 3] == "X" ||
-           grid[x][(y + 3) % 3] == "X"){
-            return true;
+        //SWITCH THESE X AND Y's AROUND
+
+        //Check Up Down Left Right and diagonals
+        if (grid[(x + 1) % 3][y] == "X"){
+            return [(x + 2) % 3, y];
+        } else if (grid[(x + 2) % 3][y] == "X"){
+            return [(x + 1) % 3, y];
+        } else if (grid[x][(y + 1) % 3] == "X"){
+            return [x, (y + 2) % 3];
+        } else if (grid[x][(y + 2) % 3] == "X"){
+            return [x, (y + 1) % 3];
+        } else if (grid[(x + 1) % 3][(y + 1) % 3] == "X"){
+            return [(x + 2) % 3, (y + 2) % 3];
+        } else if (grid[(x + 2) % 3][(y + 2) % 3] == "X"){
+            return [(x + 1) % 3, (y + 1) % 3];
+        } else if (grid[(x + 1) % 3][(y + 2) % 3] == "X"){
+            return [(x + 2) % 3, (y + 1) % 3];
+        } else if (grid[(x + 1) % 3][(y + 2) % 3] == "X"){
+            return [(x + 2) % 3, (y + 1) % 3];
         } else {
             return false;
         }
-    }
+    };
     const aiPlaceToken = (id) => {
         grid[id[0]][id[1]] = DisplayController.getPlayerTurn();
         renderBoard();
@@ -83,10 +102,10 @@ const Gameboard = (() => {
             DisplayController.announceWin();
         };
         DisplayController.changeTurn();
-    }
+    };
     const placeToken = (e) => {
         if(e.target.innerHTML == ""){
-            grid[e.target.dataset.x][e.target.dataset.y] = DisplayController.getPlayerTurn();
+            grid[e.target.dataset.y][e.target.dataset.x] = DisplayController.getPlayerTurn();
             renderBoard();
             if(checkWin( DisplayController.getPlayerTurn())){
                 DisplayController.announceWin();
@@ -131,7 +150,7 @@ const Gameboard = (() => {
         return gameOver == true ? true : false;
     }
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlock};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkForBlock};
 })();
 
 const DisplayController = (() => {
