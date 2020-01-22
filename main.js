@@ -12,23 +12,44 @@ const PlayerFactory = (xory) => {
 const aiFactory = (xory) => {
     let isTurn = false;
     const token = xory;
-    const memory = [];
+    let oMemory = [];
+    let xMemory = [];
 
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
-    const queryMemory = (id) => {
-        for(let i=0; i<memory.length;i++){
-            if(id[0] == memory[i][0] && id[1] == memory[i][1])
-            return true;
+    const queryMemory = (xory, id) => {
+        if(xory == "X"){
+            for(let i=0; i<xMemory.length;i++){
+                if(id[0] == xMemory[i][0] && id[1] == xMemory[i][1]){
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            for(let i=0; i<oMemory.length;i++){
+                if(id[0] == oMemory[i][0] && id[1] == oMemory[i][1]){
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
+    };
+    const clearMemory = () => {
+        oMemory = [];
+        xMemory = [];
     }
     const makeDecision = () => {
         let x, y;
         let blockWhere = [];
+        let winWhere = [];
 
-        //Check first if a block is needed to survive
-        if(blockWhere = Gameboard.checkForBlock()){
+        //Check first if a win is acheivable
+        if(winWhere = Gameboard.checkBlockOrWin("O")){
+
+        }
+
+        //Check next if a block is needed to survive
+        if(blockWhere = Gameboard.checkBlockOrWin("X")){
             console.log("I Blocked " + blockWhere[0] + ", " + blockWhere[1])
             memory.push([blockWhere[0],blockWhere[1]]);
             Gameboard.aiPlaceToken(blockWhere);
@@ -42,7 +63,7 @@ const aiFactory = (xory) => {
 
         // Gameboard.aiPlaceToken([x,y])
     };
-    return {toggleTurn, getTurn, makeDecision, queryMemory};
+    return {toggleTurn, getTurn, makeDecision, queryMemory, clearMemory};
 }
 
 const Gameboard = (() => {
@@ -59,50 +80,48 @@ const Gameboard = (() => {
             cell.innerHTML = grid[cell.dataset.y][cell.dataset.x];
         });
     };
-    const checkForBlock = () => {
-        //This should tell the AI where X is and determine if it should block
+    const checkBlockOrWin = (xory) => {
+        //This should see if X needs blocking or AI can win.
         let locations = [];
-        let danger = [false];
+        let requiredMove = [false];
         //Cycle through grid to find locations player has played.
         for(let i=0; i<grid.length;i++){
             for(let j=0; j<grid[i].length;j++){
-                if(grid[i][j] == "X"){
+                if(grid[i][j] == xory){
                     locations.push([i,j]);
                 }
             }
         }
-        //Loop through locations and query their neighbours to see if there is Danger and block required
+        //Loop through locations and query their neighbours to see if there is win or block needed
         for(let i=0;i<locations.length;i++){
-            danger = checkNeighbours(locations[i][0], locations[i][1]);
-            //check this hasnt been danger before
-            if(DisplayController.askAI("memory", danger)){
-                danger = false;
+            requiredMove = checkNeighbours(locations[i][0], locations[i][1], xory);
+            //check this hasnt been placed before
+            if(DisplayController.askAI("xmemory", requiredMove)){
+                requiredMove = false;
             }
-            if(danger != false){
+            if(requiredMove != false){
                 break;
             }
         }
-        return danger;
+        return requiredMove;
     };
-    const checkNeighbours = (x, y) => {
-        //SWITCH THESE X AND Y's AROUND 
-
+    const checkNeighbours = (x, y, xory) => {
         //Check Up Down Left Right and diagonals
-        if (grid[(x + 1) % 3][y] == "X"){
+        if (grid[(x + 1) % 3][y] == xory){
             return [(x + 2) % 3, y];
-        } else if (grid[(x + 2) % 3][y] == "X"){
+        } else if (grid[(x + 2) % 3][y] == xory){
             return [(x + 1) % 3, y];
-        } else if (grid[x][(y + 1) % 3] == "X"){
+        } else if (grid[x][(y + 1) % 3] == xory){
             return [x, (y + 2) % 3];
-        } else if (grid[x][(y + 2) % 3] == "X"){
+        } else if (grid[x][(y + 2) % 3] == xory){
             return [x, (y + 1) % 3];
-        } else if (grid[(x + 1) % 3][(y + 1) % 3] == "X"){
+        } else if (grid[(x + 1) % 3][(y + 1) % 3] == xory){
             return [(x + 2) % 3, (y + 2) % 3];
-        } else if (grid[(x + 2) % 3][(y + 2) % 3] == "X"){
+        } else if (grid[(x + 2) % 3][(y + 2) % 3] == xory){
             return [(x + 1) % 3, (y + 1) % 3];
-        } else if (grid[(x + 1) % 3][(y + 2) % 3] == "X"){
+        } else if (grid[(x + 1) % 3][(y + 2) % 3] == xory){
             return [(x + 2) % 3, (y + 1) % 3];
-        } else if (grid[(x + 1) % 3][(y + 2) % 3] == "X"){
+        } else if (grid[(x + 1) % 3][(y + 2) % 3] == xory){
             return [(x + 2) % 3, (y + 1) % 3];
         } else {
             return false;
@@ -163,7 +182,7 @@ const Gameboard = (() => {
         return gameOver == true ? true : false;
     }
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkForBlock};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin};
 })();
 
 const DisplayController = (() => {
@@ -175,6 +194,7 @@ const DisplayController = (() => {
     const setup = () => {
         Gameboard.resetBoard();
         Gameboard.renderBoard();
+        playerAI.clearMemory();
         resetBtn.addEventListener("click", setup);
         aiBtn.addEventListener("click", makeAiGame);
         //random player start x just for now
@@ -213,8 +233,11 @@ const DisplayController = (() => {
     };
     const askAI = (query, data) => {
         switch (query) {
-            case "memory":
-                return playerAI.queryMemory(data);
+            case "xmemory":
+                return playerAI.queryMemory("X", data);
+                break;
+            case "omemory":
+                return playerAI.queryMemory("O", data)
         }
     }
 
