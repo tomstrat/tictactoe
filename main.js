@@ -212,7 +212,10 @@ const DisplayController = (() => {
         // add button switch
     };
     const askAI = (query, data) => {
-        
+        switch (query) {
+            case "memory":
+                return playerAI.queryMemory(data);
+        }
     }
 
     //Make Player Objects
@@ -222,7 +225,7 @@ const DisplayController = (() => {
 
     //Initial Setup
     setup();
-    return{changeTurn, announceWin, getPlayerTurn};
+    return{changeTurn, announceWin, getPlayerTurn, askAI};
 })();
 
 // FUNCTIONS FOR AI
