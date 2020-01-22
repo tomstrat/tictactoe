@@ -39,7 +39,6 @@ const aiFactory = (xory) => {
         xMemory = [];
     }
     const makeDecision = () => {
-        let x, y;
         let blockWhere = [];
         let winWhere = [];
 
@@ -47,6 +46,7 @@ const aiFactory = (xory) => {
         if(winWhere = Gameboard.checkBlockOrWin("O")){
             console.log("I Played" + winWhere[0] + ", " + winWhere[1] + " for the win!");
             Gameboard.aiPlaceToken(winWhere);
+            return;
         }
 
         //Check next if a block is needed to survive
@@ -121,23 +121,23 @@ const Gameboard = (() => {
         let cellType = classifyCell(y, x);
         //Check Up Down Left Right and diagonals
         //only checks diagonals for corners and middle
-        
-        if (grid[(x + 1) % 3][y] == xory){
-            return [(x + 2) % 3, y];
-        } else if (grid[(x + 2) % 3][y] == xory){
-            return [(x + 1) % 3, y];
-        } else if (grid[x][(y + 1) % 3] == xory){
-            return [x, (y + 2) % 3];
-        } else if (grid[x][(y + 2) % 3] == xory){
-            return [x, (y + 1) % 3];
-        } else if (cellType != "side" && grid[(x + 1) % 3][(y + 1) % 3] == xory){
-            return [(x + 2) % 3, (y + 2) % 3];
+
+        if (grid[(y + 1) % 3][x] == xory){
+            return [(y + 2) % 3, x];
+        } else if (grid[(y + 2) % 3][x] == xory){
+            return [(y + 1) % 3, x];
+        } else if (grid[y][(x + 1) % 3] == xory){
+            return [y, (x + 2) % 3];
+        } else if (grid[y][(x + 2) % 3] == xory){
+            return [y, (x + 1) % 3];
+        } else if (cellType != "side" && grid[(y + 1) % 3][(x + 1) % 3] == xory){
+            return [(y + 2) % 3, (x + 2) % 3];
         } else if (cellType != "side" && grid[(x + 2) % 3][(y + 2) % 3] == xory){
-            return [(x + 1) % 3, (y + 1) % 3];
+            return [(y + 1) % 3, (x + 1) % 3];
         } else if (cellType != "side" && grid[(x + 1) % 3][(y + 2) % 3] == xory){
-            return [(x + 2) % 3, (y + 1) % 3];
+            return [(y + 2) % 3, (x + 1) % 3];
         } else if (cellType != "side" && grid[(x + 1) % 3][(y + 2) % 3] == xory){
-            return [(x + 2) % 3, (y + 1) % 3];
+            return [(y + 2) % 3, (x + 1) % 3];
         } else {
             return false;
         }
