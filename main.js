@@ -12,28 +12,37 @@ const PlayerFactory = (xory) => {
 const aiFactory = (xory) => {
     let isTurn = false;
     const token = xory;
+    const memory = [];
 
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
+    const queryMemory = (id) => {
+        for(let i=0; i<memory.length;i++){
+            if(id[0] == memory[i][0] && id[1] == memory[i][1])
+            return true;
+        }
+        return false;
+    }
     const makeDecision = () => {
         let x, y;
         let blockWhere = [];
 
         //Check first if a block is needed to survive
-        if(blockWhere = Gameboard.checkForBlock()[0]){
-            console.log("I Blocked " + blockWhere[0])
-            Gameboard.aiPlaceToken(blockWhere[0]);
+        if(blockWhere = Gameboard.checkForBlock()){
+            console.log("I Blocked " + blockWhere[0] + ", " + blockWhere[1])
+            memory.push([blockWhere[0],blockWhere[1]]);
+            Gameboard.aiPlaceToken(blockWhere);
         };
         
         //Human played Center First
-        DisplayController.changeTurn();
+
         //Human played Corner First
 
 
 
         // Gameboard.aiPlaceToken([x,y])
     };
-    return {toggleTurn, getTurn, makeDecision};
+    return {toggleTurn, getTurn, makeDecision, queryMemory};
 }
 
 const Gameboard = (() => {
@@ -63,16 +72,20 @@ const Gameboard = (() => {
             }
         }
         //Loop through locations and query their neighbours to see if there is Danger and block required
-        locations.forEach((arr) =>{
-            danger = checkNeighbours(arr[0], arr[1]);
-            if(danger[0]){
-                return;
+        for(let i=0;i<locations.length;i++){
+            danger = checkNeighbours(locations[i][0], locations[i][1]);
+            //check this hasnt been danger before
+            if(DisplayController.askAI("memory", danger)){
+                danger = false;
             }
-        });
+            if(danger != false){
+                break;
+            }
+        }
         return danger;
     };
     const checkNeighbours = (x, y) => {
-        //SWITCH THESE X AND Y's AROUND
+        //SWITCH THESE X AND Y's AROUND 
 
         //Check Up Down Left Right and diagonals
         if (grid[(x + 1) % 3][y] == "X"){
@@ -198,6 +211,9 @@ const DisplayController = (() => {
         aiGame = true;
         // add button switch
     };
+    const askAI = (query, data) => {
+        
+    }
 
     //Make Player Objects
     const playerX = PlayerFactory("X");
