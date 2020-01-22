@@ -71,6 +71,7 @@ const Gameboard = (() => {
     let grid = [["","",""],["","",""],["","",""]];
     let cells = document.querySelectorAll(".cell");
     let overlay = document.getElementById("winOverlay");
+    let turnCounter = 0;
 
     const classifyCell = (y, x) => {
         if(y == 1 && x == 1){
@@ -85,7 +86,11 @@ const Gameboard = (() => {
     };
     const toggleOverlay = (toggle, winner) => {
         overlay.style.display = toggle ? "block" : "none";
-        overlay.firstElementChild.innerHTML = `${winner} Wins the game!`;
+        if(winner == "Draw"){
+            overlay.firstElementChild.innerHTML = `Its a Draw!`;
+        } else {
+            overlay.firstElementChild.innerHTML = `${winner} Wins the game!`;
+        }
     };
     const renderBoard = () => {
         cells.forEach(cell =>{
@@ -145,6 +150,7 @@ const Gameboard = (() => {
     const aiPlaceToken = (id) => {
         grid[id[0]][id[1]] = DisplayController.getPlayerTurn();
         renderBoard();
+        turnCounter++;
         if(checkWin( DisplayController.getPlayerTurn())){
             DisplayController.announceWin();
         };
@@ -154,6 +160,7 @@ const Gameboard = (() => {
         if(e.target.innerHTML == ""){
             grid[e.target.dataset.y][e.target.dataset.x] = DisplayController.getPlayerTurn();
             renderBoard();
+            turnCounter++
             if(checkWin( DisplayController.getPlayerTurn())){
                 DisplayController.announceWin();
             };
@@ -165,6 +172,7 @@ const Gameboard = (() => {
     const resetBoard = () => {
         grid = [["","",""],["","",""],["","",""]];
         toggleOverlay(false, "Noone")
+        turnCounter = 0;
         //random colour for cells
         cells.forEach(cell => {
             cell.addEventListener("click", placeToken);
@@ -194,10 +202,16 @@ const Gameboard = (() => {
                 gameOver = true;
             };
         }
+        if(turnCounter == 9){
+            gameOver = true;
+        }
         return gameOver == true ? true : false;
+    };
+    const getTurnCount = () => {
+        return turnCounter;
     }
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin, getTurnCount};
 })();
 
 const DisplayController = (() => {
@@ -237,7 +251,11 @@ const DisplayController = (() => {
         }
     };
     const announceWin = (winner) => {
-        Gameboard.toggleOverlay(true, getPlayerTurn());
+        if(Gameboard.getTurnCount() == 9){
+            Gameboard.toggleOverlay(true, "Draw")
+        } else {
+            Gameboard.toggleOverlay(true, getPlayerTurn());
+        }
     };
     const getPlayerTurn = () => {
         return playerX.getTurn() == true ? "X" : "O";
