@@ -45,13 +45,14 @@ const aiFactory = (xory) => {
 
         //Check first if a win is acheivable
         if(winWhere = Gameboard.checkBlockOrWin("O")){
-
+            console.log("I Played" + winWhere[0] + ", " + winWhere[1] + " for the win!");
+            Gameboard.aiPlaceToken(winWhere);
         }
 
         //Check next if a block is needed to survive
         if(blockWhere = Gameboard.checkBlockOrWin("X")){
             console.log("I Blocked " + blockWhere[0] + ", " + blockWhere[1])
-            memory.push([blockWhere[0],blockWhere[1]]);
+            xMemory.push([blockWhere[0],blockWhere[1]]);
             Gameboard.aiPlaceToken(blockWhere);
         };
         
@@ -71,6 +72,17 @@ const Gameboard = (() => {
     let cells = document.querySelectorAll(".cell");
     let overlay = document.getElementById("winOverlay");
 
+    const classifyCell = (y, x) => {
+        if(y == 1 && x == 1){
+            return "middle";
+        } else if(y == 1){
+            return "side";
+        } else if(x == 0 || x == 2){
+            return "corner";
+        } else {
+            return "side";
+        }
+    };
     const toggleOverlay = (toggle, winner) => {
         overlay.style.display = toggle ? "block" : "none";
         overlay.firstElementChild.innerHTML = `${winner} Wins the game!`;
@@ -83,7 +95,7 @@ const Gameboard = (() => {
     const checkBlockOrWin = (xory) => {
         //This should see if X needs blocking or AI can win.
         let locations = [];
-        let requiredMove = [false];
+        let requiredMove = false;
         //Cycle through grid to find locations player has played.
         for(let i=0; i<grid.length;i++){
             for(let j=0; j<grid[i].length;j++){
@@ -105,8 +117,11 @@ const Gameboard = (() => {
         }
         return requiredMove;
     };
-    const checkNeighbours = (x, y, xory) => {
+    const checkNeighbours = (y, x, xory) => {
+        let cellType = classifyCell(y, x);
         //Check Up Down Left Right and diagonals
+        //only checks diagonals for corners and middle
+        
         if (grid[(x + 1) % 3][y] == xory){
             return [(x + 2) % 3, y];
         } else if (grid[(x + 2) % 3][y] == xory){
@@ -115,13 +130,13 @@ const Gameboard = (() => {
             return [x, (y + 2) % 3];
         } else if (grid[x][(y + 2) % 3] == xory){
             return [x, (y + 1) % 3];
-        } else if (grid[(x + 1) % 3][(y + 1) % 3] == xory){
+        } else if (cellType != "side" && grid[(x + 1) % 3][(y + 1) % 3] == xory){
             return [(x + 2) % 3, (y + 2) % 3];
-        } else if (grid[(x + 2) % 3][(y + 2) % 3] == xory){
+        } else if (cellType != "side" && grid[(x + 2) % 3][(y + 2) % 3] == xory){
             return [(x + 1) % 3, (y + 1) % 3];
-        } else if (grid[(x + 1) % 3][(y + 2) % 3] == xory){
+        } else if (cellType != "side" && grid[(x + 1) % 3][(y + 2) % 3] == xory){
             return [(x + 2) % 3, (y + 1) % 3];
-        } else if (grid[(x + 1) % 3][(y + 2) % 3] == xory){
+        } else if (cellType != "side" && grid[(x + 1) % 3][(y + 2) % 3] == xory){
             return [(x + 2) % 3, (y + 1) % 3];
         } else {
             return false;
