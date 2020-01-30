@@ -14,6 +14,8 @@ const aiFactory = (xory) => {
     const token = xory;
     let oMemory = [];
     let xMemory = [];
+    let firstTurn = "";
+    let secondTurn = "";
 
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
@@ -58,7 +60,7 @@ const aiFactory = (xory) => {
     const makeDecision = () => {
         let blockWhere = [];
         let winWhere = [];
-        let firstTurn = "";
+  
 
         //Check first if a win is acheivable
         if(winWhere = Gameboard.checkBlockOrWin("O")){
@@ -77,20 +79,35 @@ const aiFactory = (xory) => {
         switch (gameboard.getTurnCount()){
             case 1:
                 //first turn
-                if(Gameboard.queryBoard("first") == "corner"){
+                if(Gameboard.queryBoard() == "corner"){
                     //Human played Corner First, so ai goes middle.
                     firstTurn = "corner"
                     playMiddle();
-                } else if(Gameboard.queryBoard("first") == "middle"){
+                } else if(Gameboard.queryBoard() == "middle"){
                     //Human played Middle First so ai plays random corner
                     firstTurn = "middle"
                     playCorner();
                 } else {
-                    //Human played side
+                    //Human played edge
+                    firstTurn = "edge"
+                    playMiddle();
                 }
                 break;
             case 2:
-
+                //second turn
+                if(firstTurn = "corner" && Gameboard.queryBoard() == "corner"){
+                    //Human played Corner First, so ai goes middle.
+                    secondTurn = "corner"
+                    playEdge();
+                } else if(Gameboard.queryBoard() == "middle"){
+                    //Human played Middle First so ai plays random corner
+                    firstTurn = "middle"
+                    playCorner();
+                } else {
+                    //Human played edge
+                    firstTurn = "edge"
+                    playCorner();
+                }
                 break;
         }
 
@@ -128,19 +145,13 @@ const Gameboard = (() => {
             cell.innerHTML = grid[cell.dataset.y][cell.dataset.x];
         });
     };
-    const queryBoard = (turn) =>{
-        switch (turn) {
-            case "first":
-                for(let i=0;i<grid.length;i++){
-                    for(letj=0;j<grid[i].length;i++){
-                        if(grid[i][j] == "X"){
-                            return classifyCell(grid[i],grid[j]);
-                        }
-                    }
+    const queryBoard = () =>{
+        for(let i=0;i<grid.length;i++){
+            for(letj=0;j<grid[i].length;i++){
+                if(grid[i][j] == "X"){
+                    return classifyCell(grid[i],grid[j]);
                 }
-                break;
-            case "second":
-                break;
+            }
         }
     };
     const checkBlockOrWin = (xory) => {
