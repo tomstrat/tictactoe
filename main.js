@@ -42,9 +42,23 @@ const aiFactory = (xory) => {
     const queryAllMemory = () => {
         return {oMemory, xMemory};
     };
+    const playEdge = () =>{
+        let max = 4;
+        let edges = [[0,1][1,0][1,2][2,1]]
+        gameboard.aiPlaceToken(edges[Math.floor(Math.random() * Math.floor(max))])
+    };
+    const playCorner = () =>{
+        let max = 4;
+        let corners = [[0,0][0,2][2,0][2,2]]
+        gameboard.aiPlaceToken(corners[Math.floor(Math.random() * Math.floor(max))])
+    };
+    const playMiddle = () =>{
+        gameboard.aiPlaceToken([1,1]);
+    }
     const makeDecision = () => {
         let blockWhere = [];
         let winWhere = [];
+        let firstTurn = "";
 
         //Check first if a win is acheivable
         if(winWhere = Gameboard.checkBlockOrWin("O")){
@@ -60,21 +74,26 @@ const aiFactory = (xory) => {
             Gameboard.aiPlaceToken(blockWhere);
         };
         
-        //first turn
-        if(gameboard.getTurnCount == 1 && Gameboard.queryBoard == "corner"){
-            //Human played Corner First, so ai goes middle.
-            Gameboard.aiPlaceToken([1,1])
-        } else if(gameboard.getTurnCount == 1 && Gameboard.queryBoard == "side"){
-            //Human played Side First
+        switch (gameboard.getTurnCount()){
+            case 1:
+                //first turn
+                if(Gameboard.queryBoard("first") == "corner"){
+                    //Human played Corner First, so ai goes middle.
+                    firstTurn = "corner"
+                    playMiddle();
+                } else if(Gameboard.queryBoard("first") == "middle"){
+                    //Human played Middle First so ai plays random corner
+                    firstTurn = "middle"
+                    playCorner();
+                } else {
+                    //Human played side
+                }
+                break;
+            case 2:
 
-        } else {
-            //Human played Corner First
+                break;
         }
 
-
-
-
-        // Gameboard.aiPlaceToken([x,y])
     };
     return {toggleTurn, getTurn, makeDecision, queryMemory, clearMemory, queryAllMemory};
 }
@@ -108,6 +127,21 @@ const Gameboard = (() => {
         cells.forEach(cell =>{
             cell.innerHTML = grid[cell.dataset.y][cell.dataset.x];
         });
+    };
+    const queryBoard = (turn) =>{
+        switch (turn) {
+            case "first":
+                for(let i=0;i<grid.length;i++){
+                    for(letj=0;j<grid[i].length;i++){
+                        if(grid[i][j] == "X"){
+                            return classifyCell(grid[i],grid[j]);
+                        }
+                    }
+                }
+                break;
+            case "second":
+                break;
+        }
     };
     const checkBlockOrWin = (xory) => {
         //This should see if X needs blocking or AI can win.
@@ -223,7 +257,7 @@ const Gameboard = (() => {
         return turnCounter;
     }
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin, getTurnCount};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin, getTurnCount, queryBoard};
 })();
 
 const DisplayController = (() => {
