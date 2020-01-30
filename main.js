@@ -38,6 +38,10 @@ const aiFactory = (xory) => {
         oMemory = [];
         xMemory = [];
     }
+    //primarily a debugging tool
+    const queryAllMemory = () => {
+        return {oMemory, xMemory};
+    };
     const makeDecision = () => {
         let blockWhere = [];
         let winWhere = [];
@@ -52,19 +56,27 @@ const aiFactory = (xory) => {
         //Check next if a block is needed to survive
         if(blockWhere = Gameboard.checkBlockOrWin("X")){
             console.log("I Blocked " + blockWhere[0] + ", " + blockWhere[1])
-            xMemory.push([blockWhere[0],blockWhere[1]]);
+            oMemory.push([blockWhere[0],blockWhere[1]]);
             Gameboard.aiPlaceToken(blockWhere);
         };
         
-        //Human played Center First
+        //first turn
+        if(gameboard.getTurnCount == 1 && Gameboard.queryBoard == "corner"){
+            //Human played Corner First, so ai goes middle.
+            Gameboard.aiPlaceToken([1,1])
+        } else if(gameboard.getTurnCount == 1 && Gameboard.queryBoard == "side"){
+            //Human played Side First
 
-        //Human played Corner First
+        } else {
+            //Human played Corner First
+        }
+
 
 
 
         // Gameboard.aiPlaceToken([x,y])
     };
-    return {toggleTurn, getTurn, makeDecision, queryMemory, clearMemory};
+    return {toggleTurn, getTurn, makeDecision, queryMemory, clearMemory, queryAllMemory};
 }
 
 const Gameboard = (() => {
@@ -113,7 +125,7 @@ const Gameboard = (() => {
         for(let i=0;i<locations.length;i++){
             requiredMove = checkNeighbours(locations[i][0], locations[i][1], xory);
             //check this hasnt been placed before
-            if(DisplayController.askAI("xmemory", requiredMove)){
+            if(DisplayController.askAI("omemory", requiredMove)){
                 requiredMove = false;
             }
             if(requiredMove != false){
@@ -271,6 +283,11 @@ const DisplayController = (() => {
                 break;
             case "omemory":
                 return playerAI.queryMemory("O", data)
+                break;
+            case "memory":
+                //this is just for debug
+                return playerAI.queryAllMemory();
+                break;
         }
     }
 
@@ -284,11 +301,4 @@ const DisplayController = (() => {
     return{changeTurn, announceWin, getPlayerTurn, askAI};
 })();
 
-// FUNCTIONS FOR AI
-// DisplayController: aiTurn
-// DisplayController: Check on changeTurn for pass to ai or not
-// Player: isAI? Bool that will be checked.
-// AI Play button to switch a player to AI
-// AI button to change to 2 Player when hit (toggles)
-// MAKE AI ALGORITHM....
 
