@@ -122,15 +122,15 @@ const Gameboard = (() => {
     let turnCounter = 0;
 
     const classifyCell = (y, x) => {
+        let cell = {};
         if(y == 1 && x == 1){
-            return "middle";
-        } else if(y == 1){
-            return "side";
+            cell.class = "middle";
+        } else if(y == 1 || x == 1){
+            cell.class = "edge";
         } else if(x == 0 || x == 2){
-            return "corner";
-        } else {
-            return "side";
+            cell.class = "corner";
         }
+        return cell;
     };
     const toggleOverlay = (toggle, winner) => {
         overlay.style.display = toggle ? "block" : "none";
@@ -147,7 +147,7 @@ const Gameboard = (() => {
     };
     const queryBoard = () =>{
         for(let i=0;i<grid.length;i++){
-            for(let j=0;j<grid[i].length;i++){
+            for(let j=0;j<grid[i].length;j++){
                 if(grid[i][j] == "X"){
                     return classifyCell(grid[i],grid[j]);
                 }
@@ -158,7 +158,7 @@ const Gameboard = (() => {
         //This should see if X needs blocking or AI can win.
         let locations = [];
         let requiredMove = false;
-        //Cycle through grid to find locations player has played.
+        //Cycle through grid to find locations player or ai has played.
         for(let i=0; i<grid.length;i++){
             for(let j=0; j<grid[i].length;j++){
                 if(grid[i][j] == xory){
@@ -170,12 +170,10 @@ const Gameboard = (() => {
         for(let i=0;i<locations.length;i++){
             requiredMove = checkNeighbours(locations[i][0], locations[i][1], xory);
             //check this hasnt been placed before
-            if(DisplayController.askAI("omemory", requiredMove)){
-                requiredMove = false;
-            }
-            if(requiredMove != false){
+            if(requiredMove && checkSpace(requiredMove)){
                 break;
             }
+            requiredMove = false;
         }
         return requiredMove;
     };
@@ -192,14 +190,14 @@ const Gameboard = (() => {
             return [y, (x + 2) % 3];
         } else if (grid[y][(x + 2) % 3] == xory){
             return [y, (x + 1) % 3];
-        } else if (cellType != "side" && grid[(y + 1) % 3][(x + 1) % 3] == xory){
+        } else if (cellType != "edge" && grid[(y + 1) % 3][(x + 1) % 3] == xory){
             return [(y + 2) % 3, (x + 2) % 3];
-        } else if (cellType != "side" && grid[(x + 2) % 3][(y + 2) % 3] == xory){
+        } else if (cellType != "edge" && grid[(y + 2) % 3][(x + 2) % 3] == xory){
             return [(y + 1) % 3, (x + 1) % 3];
-        } else if (cellType != "side" && grid[(x + 1) % 3][(y + 2) % 3] == xory){
+        } else if (cellType != "edge" && grid[(y + 1) % 3][(x + 2) % 3] == xory){
             return [(y + 2) % 3, (x + 1) % 3];
-        } else if (cellType != "side" && grid[(x + 1) % 3][(y + 2) % 3] == xory){
-            return [(y + 2) % 3, (x + 1) % 3];
+        } else if (cellType != "edge" && grid[(y + 2) % 3][(x + 1) % 3] == xory){
+            return [(y + 1) % 3, (x + 2) % 3];
         } else {
             return false;
         }
@@ -225,6 +223,14 @@ const Gameboard = (() => {
         } else {
             console.log("something exists here already")
         };
+    };
+    const checkSpace = (id) => {
+        //Is space occupied?
+        if(grid[id[0]][id[1]] == ""){
+            return true;
+        } else {
+            return false;
+        }
     };
     const resetBoard = () => {
         grid = [["","",""],["","",""],["","",""]];
@@ -319,6 +325,7 @@ const DisplayController = (() => {
     };
     const makeAiGame = () => {
         aiGame = true;
+        Gameboard.resetBoard();
         // add button switch
     };
     const askAI = (query, data) => {
