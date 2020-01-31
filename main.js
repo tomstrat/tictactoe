@@ -127,8 +127,15 @@ const Gameboard = (() => {
             cell.class = "middle";
         } else if(y == 1 || x == 1){
             cell.class = "edge";
-        } else if(x == 0 || x == 2){
+        } else {
             cell.class = "corner";
+            if(y == 0 && x == 0 || y == 2 && x == 2){
+                //Left Up Right Down
+                cell.type = "LURD";
+            } else {
+                //Left Down Right Up
+                cell.type = "LDRU";
+            }
         }
         return cell;
     };
@@ -149,7 +156,7 @@ const Gameboard = (() => {
         for(let i=0;i<grid.length;i++){
             for(let j=0;j<grid[i].length;j++){
                 if(grid[i][j] == "X"){
-                    return classifyCell(grid[i],grid[j]);
+                    return classifyCell(grid[i],grid[j]).class;
                 }
             }
         }
@@ -190,13 +197,13 @@ const Gameboard = (() => {
             return [y, (x + 2) % 3];
         } else if (grid[y][(x + 2) % 3] == xory){
             return [y, (x + 1) % 3];
-        } else if (cellType != "edge" && grid[(y + 1) % 3][(x + 1) % 3] == xory){
+        } else if (cellType.class != "edge" && cellType.type != "LDRU" && grid[(y + 1) % 3][(x + 1) % 3] == xory){
             return [(y + 2) % 3, (x + 2) % 3];
-        } else if (cellType != "edge" && grid[(y + 2) % 3][(x + 2) % 3] == xory){
+        } else if (cellType.class != "edge" && cellType.type != "LDRU" && grid[(y + 2) % 3][(x + 2) % 3] == xory){
             return [(y + 1) % 3, (x + 1) % 3];
-        } else if (cellType != "edge" && grid[(y + 1) % 3][(x + 2) % 3] == xory){
+        } else if (cellType.class != "edge" && cellType.type != "LURD" && grid[(y + 1) % 3][(x + 2) % 3] == xory){
             return [(y + 2) % 3, (x + 1) % 3];
-        } else if (cellType != "edge" && grid[(y + 2) % 3][(x + 1) % 3] == xory){
+        } else if (cellType.class != "edge" && cellType.type != "LURD" && grid[(y + 2) % 3][(x + 1) % 3] == xory){
             return [(y + 1) % 3, (x + 2) % 3];
         } else {
             return false;
