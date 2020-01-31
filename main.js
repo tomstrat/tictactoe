@@ -47,15 +47,15 @@ const aiFactory = (xory) => {
     const playEdge = () =>{
         let max = 4;
         let edges = [[0,1][1,0][1,2][2,1]]
-        gameboard.aiPlaceToken(edges[Math.floor(Math.random() * Math.floor(max))])
+        Gameboard.aiPlaceToken(edges[Math.floor(Math.random() * Math.floor(max))])
     };
     const playCorner = () =>{
         let max = 4;
         let corners = [[0,0][0,2][2,0][2,2]]
-        gameboard.aiPlaceToken(corners[Math.floor(Math.random() * Math.floor(max))])
+        Gameboard.aiPlaceToken(corners[Math.floor(Math.random() * Math.floor(max))])
     };
     const playMiddle = () =>{
-        gameboard.aiPlaceToken([1,1]);
+        Gameboard.aiPlaceToken([1,1]);
     }
     const makeDecision = () => {
         let blockWhere = [];
@@ -76,7 +76,7 @@ const aiFactory = (xory) => {
             Gameboard.aiPlaceToken(blockWhere);
         };
         
-        switch (gameboard.getTurnCount()){
+        switch (Gameboard.getTurnCount()){
             case 1:
                 //first turn
                 if(Gameboard.queryBoard() == "corner"){
@@ -147,7 +147,7 @@ const Gameboard = (() => {
     };
     const queryBoard = () =>{
         for(let i=0;i<grid.length;i++){
-            for(letj=0;j<grid[i].length;i++){
+            for(let j=0;j<grid[i].length;i++){
                 if(grid[i][j] == "X"){
                     return classifyCell(grid[i],grid[j]);
                 }
