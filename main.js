@@ -46,14 +46,14 @@ const aiFactory = (xory) => {
     };
     const playEdge = () =>{
         let max = 4;
-        let edges = [[0,1][1,0][1,2][2,1]]
+        let edges = [[0,1],[1,0],[1,2],[2,1]];
         let randomEdge = edges[Math.floor(Math.random() * Math.floor(max))];
         console.log("I Played a Random Edge " + randomEdge[0] + ", " + randomEdge[1] + " on Turn " + Gameboard.getTurnCount());
         Gameboard.aiPlaceToken(randomEdge);
     };
     const playCorner = () =>{
         let max = 4;
-        let corners = [[0,0][0,2][2,0][2,2]]
+        let corners = [[0,0],[0,2],[2,0],[2,2]];
         let randomCorner = corners[Math.floor(Math.random() * Math.floor(max))];
         console.log("I Played a Random Corner " + randomCorner[0] + ", " + randomCorner[1] + " on Turn " + Gameboard.getTurnCount());
         Gameboard.aiPlaceToken(randomCorner);
@@ -101,16 +101,12 @@ const aiFactory = (xory) => {
                 break;
             case 4:
                 //second turn
-                if(firstTurn = "corner" && Gameboard.lastPlayerLocation().class == "corner"){
-                    //Human played Corner First, so ai goes middle.
+                if(firstTurn = "corner" && Gameboard.getLastPlayerLocation().class == "corner"){
+                    //Human played Corner second, so ai goes random edge.
                     secondTurn = "corner"
                     playEdge();
-                } else if(Gameboard.getLastPlayerLocation().class == "middle"){
-                    //Human played Middle First so ai plays random corner
-                    secondTurn = "middle"
-                    playCorner();
                 } else {
-                    //Human played edge
+                    //Human played edge first. So ai goes corner second. Will win if player went opposite edge
                     secondTurn = "edge"
                     playCorner();
                 }
@@ -228,13 +224,39 @@ const Gameboard = (() => {
         }
     };
     const aiPlaceToken = (id) => {
-        grid[id[0]][id[1]] = DisplayController.getPlayerTurn();
+        //get empty cells as we will check against these for randoms.
+        let empties = [];
+        for(let i=0; i<grid.length;i++){
+            for(let j=0; j<grid[i].length;j++){
+                if(grid[i][j] == ""){
+                    empties.push([i,j]);
+                }
+            }
+        }
+        //Where does the ai want to play? Defaults to exact location, else will ask for random class (corner)
+        switch (id) {
+            case "corner":
+                let randomCell = classifyCell();
+                if(randomCell.class == id){
+                    //FIX THIS OR WONT WORK - Trying to get random class of cell from array to play. Need to change make decsion ai function too.
+                }
+                break;
+            case "edge":
+
+                break;
+            case "middle":
+                grid[1][1] = DisplayController.getPlayerTurn();
+                break;
+            default:
+                grid[id[0]][id[1]] = DisplayController.getPlayerTurn();
+        }
         renderBoard();
         turnCounter++;
         if(checkWin( DisplayController.getPlayerTurn())){
             DisplayController.announceWin();
-        };
-        DisplayController.changeTurn();
+        } else {
+            DisplayController.changeTurn();
+        }
     };
     const placeToken = (e) => {
         if(e.target.innerHTML == ""){
@@ -244,11 +266,12 @@ const Gameboard = (() => {
             turnCounter++
             if(checkWin( DisplayController.getPlayerTurn())){
                 DisplayController.announceWin();
-            };
-            DisplayController.changeTurn();
+            } else {
+                DisplayController.changeTurn();
+            }
         } else {
             console.log("something exists here already")
-        };
+        }
     };
     const checkSpace = (id) => {
         //Is space occupied?
