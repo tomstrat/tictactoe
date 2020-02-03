@@ -47,14 +47,19 @@ const aiFactory = (xory) => {
     const playEdge = () =>{
         let max = 4;
         let edges = [[0,1][1,0][1,2][2,1]]
-        Gameboard.aiPlaceToken(edges[Math.floor(Math.random() * Math.floor(max))])
+        let randomEdge = edges[Math.floor(Math.random() * Math.floor(max))];
+        console.log("I Played a Random Edge " + randomEdge[0] + ", " + randomEdge[1] + " on Turn " + Gameboard.getTurnCount());
+        Gameboard.aiPlaceToken(randomEdge);
     };
     const playCorner = () =>{
         let max = 4;
         let corners = [[0,0][0,2][2,0][2,2]]
-        Gameboard.aiPlaceToken(corners[Math.floor(Math.random() * Math.floor(max))])
+        let randomCorner = corners[Math.floor(Math.random() * Math.floor(max))];
+        console.log("I Played a Random Corner " + randomCorner[0] + ", " + randomCorner[1] + " on Turn " + Gameboard.getTurnCount());
+        Gameboard.aiPlaceToken(randomCorner);
     };
     const playMiddle = () =>{
+        console.log("I Played the Middle on Turn " + Gameboard.getTurnCount());
         Gameboard.aiPlaceToken([1,1]);
     }
     const makeDecision = () => {
@@ -74,16 +79,17 @@ const aiFactory = (xory) => {
             console.log("I Blocked " + blockWhere[0] + ", " + blockWhere[1])
             oMemory.push([blockWhere[0],blockWhere[1]]);
             Gameboard.aiPlaceToken(blockWhere);
+            return;
         };
         
         switch (Gameboard.getTurnCount()){
-            case 1:
+            case 2:
                 //first turn
-                if(Gameboard.queryBoard() == "corner"){
+                if(Gameboard.getLastPlayerLocation().class == "corner"){
                     //Human played Corner First, so ai goes middle.
                     firstTurn = "corner"
                     playMiddle();
-                } else if(Gameboard.queryBoard() == "middle"){
+                } else if(Gameboard.getLastPlayerLocation().class == "middle"){
                     //Human played Middle First so ai plays random corner
                     firstTurn = "middle"
                     playCorner();
@@ -93,22 +99,27 @@ const aiFactory = (xory) => {
                     playMiddle();
                 }
                 break;
-            case 2:
+            case 4:
                 //second turn
-                if(firstTurn = "corner" && Gameboard.queryBoard() == "corner"){
+                if(firstTurn = "corner" && Gameboard.lastPlayerLocation().class == "corner"){
                     //Human played Corner First, so ai goes middle.
                     secondTurn = "corner"
                     playEdge();
-                } else if(Gameboard.queryBoard() == "middle"){
+                } else if(Gameboard.getLastPlayerLocation().class == "middle"){
                     //Human played Middle First so ai plays random corner
-                    firstTurn = "middle"
+                    secondTurn = "middle"
                     playCorner();
                 } else {
                     //Human played edge
-                    firstTurn = "edge"
+                    secondTurn = "edge"
                     playCorner();
                 }
                 break;
+            default:
+                //Play somewhere random
+                let randomPlay = Gameboard.getRandomEmptyCell();
+                Gameboard.aiPlaceToken(randomPlay);
+                console.log("I Randomly Played " + randomPlay[0] + ", " + randomPlay[1]);
         }
 
     };
@@ -119,7 +130,8 @@ const Gameboard = (() => {
     let grid = [["","",""],["","",""],["","",""]];
     let cells = document.querySelectorAll(".cell");
     let overlay = document.getElementById("winOverlay");
-    let turnCounter = 0;
+    let turnCounter = 1;
+    let lastPlayerLocation = [];
 
     const classifyCell = (y, x) => {
         let cell = {};
@@ -152,14 +164,20 @@ const Gameboard = (() => {
             cell.innerHTML = grid[cell.dataset.y][cell.dataset.x];
         });
     };
-    const queryBoard = () =>{
-        for(let i=0;i<grid.length;i++){
-            for(let j=0;j<grid[i].length;j++){
-                if(grid[i][j] == "X"){
-                    return classifyCell(grid[i],grid[j]).class;
+    const getRandomEmptyCell = () => {
+        let empties = [];
+        for(let i=0; i<grid.length;i++){
+            for(let j=0; j<grid[i].length;j++){
+                if(grid[i][j] == ""){
+                    empties.push([i,j]);
                 }
             }
         }
+        // returns a random empty cell for the AI to play
+        return empties[Math.floor(Math.random() * Math.floor(empties.length))];
+    };
+    const getLastPlayerLocation = () =>{
+        return lastPlayerLocation;
     };
     const checkBlockOrWin = (xory) => {
         //This should see if X needs blocking or AI can win.
@@ -221,6 +239,7 @@ const Gameboard = (() => {
     const placeToken = (e) => {
         if(e.target.innerHTML == ""){
             grid[e.target.dataset.y][e.target.dataset.x] = DisplayController.getPlayerTurn();
+            lastPlayerLocation = classifyCell(e.target.dataset.y, e.target.dataset.x);
             renderBoard();
             turnCounter++
             if(checkWin( DisplayController.getPlayerTurn())){
@@ -242,7 +261,7 @@ const Gameboard = (() => {
     const resetBoard = () => {
         grid = [["","",""],["","",""],["","",""]];
         toggleOverlay(false, "Noone")
-        turnCounter = 0;
+        turnCounter = 1;
         //random colour for cells
         cells.forEach(cell => {
             cell.addEventListener("click", placeToken);
@@ -272,7 +291,7 @@ const Gameboard = (() => {
                 gameOver = true;
             };
         }
-        if(turnCounter == 9){
+        if(turnCounter == 10){
             gameOver = true;
         }
         return gameOver == true ? true : false;
@@ -281,7 +300,7 @@ const Gameboard = (() => {
         return turnCounter;
     }
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin, getTurnCount, queryBoard};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin, getTurnCount, getLastPlayerLocation, getRandomEmptyCell};
 })();
 
 const DisplayController = (() => {
@@ -321,7 +340,7 @@ const DisplayController = (() => {
         }
     };
     const announceWin = (winner) => {
-        if(Gameboard.getTurnCount() == 9){
+        if(Gameboard.getTurnCount() == 10){
             Gameboard.toggleOverlay(true, "Draw")
         } else {
             Gameboard.toggleOverlay(true, getPlayerTurn());
@@ -361,3 +380,5 @@ const DisplayController = (() => {
 })();
 
 
+//Gameboard Main Loop function to return a request but its only one that loops.
+//
