@@ -231,20 +231,20 @@ const Gameboard = (() => {
         switch (id) {
            //FIX THIS OR WONT WORK - Trying to get random class of cell from array to play. Need to change make decsion ai function too.
             case "corner":
-                empties.forEach(cell =>{
-                    if(cell[2].class == id){
-                        grid[cell[0]][cell[1]] = DisplayController.getPlayerTurn();
-                        return;
+                for(let i=0;i<empties.length;i++){
+                    if(empties[i][2].class == id){
+                        grid[empties[i][0]][empties[i][1]] = DisplayController.getPlayerTurn();
+                        break;
                     }
-                });
+                };
                 break;
             case "edge":
-                empties.forEach(cell =>{
-                    if(cell[2].class == id){
-                        grid[cell[0]][cell[1]] = DisplayController.getPlayerTurn();
-                        return;
+                for(let i=0;i<empties.length;i++){
+                    if(empties[i][2].class == id){
+                        grid[empties[i][0]][empties[i][1]] = DisplayController.getPlayerTurn();
+                        break;
                     }
-                });
+                };
                 break;
             case "middle":
                 grid[1][1] = DisplayController.getPlayerTurn();
