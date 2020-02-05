@@ -69,6 +69,15 @@ button{
     width: 120px;
     height: 50px;
 }
+#humanBtn{
+    background-color: rgb(24, 226, 24);
+}
 #resetBtn{
     float: right;
+}
+.hideBtn{
+    display:none;
+}
+.showBtn{
+    display:inline-block;
 }
