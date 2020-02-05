@@ -45,22 +45,16 @@ const aiFactory = (xory) => {
         return {oMemory, xMemory};
     };
     const playEdge = () =>{
-        let max = 4;
-        let edges = [[0,1],[1,0],[1,2],[2,1]];
-        let randomEdge = edges[Math.floor(Math.random() * Math.floor(max))];
-        console.log("I Played a Random Edge " + randomEdge[0] + ", " + randomEdge[1] + " on Turn " + Gameboard.getTurnCount());
-        Gameboard.aiPlaceToken(randomEdge);
+        console.log("I Played a Random Edge on Turn " + Gameboard.getTurnCount());
+        Gameboard.aiPlaceToken("edge");
     };
     const playCorner = () =>{
-        let max = 4;
-        let corners = [[0,0],[0,2],[2,0],[2,2]];
-        let randomCorner = corners[Math.floor(Math.random() * Math.floor(max))];
-        console.log("I Played a Random Corner " + randomCorner[0] + ", " + randomCorner[1] + " on Turn " + Gameboard.getTurnCount());
-        Gameboard.aiPlaceToken(randomCorner);
+        console.log("I Played a Random Corner on Turn " + Gameboard.getTurnCount());
+        Gameboard.aiPlaceToken("corner");
     };
     const playMiddle = () =>{
         console.log("I Played the Middle on Turn " + Gameboard.getTurnCount());
-        Gameboard.aiPlaceToken([1,1]);
+        Gameboard.aiPlaceToken("middle");
     }
     const makeDecision = () => {
         let blockWhere = [];
@@ -229,20 +223,28 @@ const Gameboard = (() => {
         for(let i=0; i<grid.length;i++){
             for(let j=0; j<grid[i].length;j++){
                 if(grid[i][j] == ""){
-                    empties.push([i,j]);
+                    empties.push([i,j,classifyCell(i,j)]);
                 }
             }
         }
         //Where does the ai want to play? Defaults to exact location, else will ask for random class (corner)
         switch (id) {
+           //FIX THIS OR WONT WORK - Trying to get random class of cell from array to play. Need to change make decsion ai function too.
             case "corner":
-                let randomCell = classifyCell();
-                if(randomCell.class == id){
-                    //FIX THIS OR WONT WORK - Trying to get random class of cell from array to play. Need to change make decsion ai function too.
-                }
+                empties.forEach(cell =>{
+                    if(cell[2].class == id){
+                        grid[cell[0]][cell[1]] = DisplayController.getPlayerTurn();
+                        return;
+                    }
+                });
                 break;
             case "edge":
-
+                empties.forEach(cell =>{
+                    if(cell[2].class == id){
+                        grid[cell[0]][cell[1]] = DisplayController.getPlayerTurn();
+                        return;
+                    }
+                });
                 break;
             case "middle":
                 grid[1][1] = DisplayController.getPlayerTurn();
