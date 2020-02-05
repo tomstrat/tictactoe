@@ -219,11 +219,16 @@ const Gameboard = (() => {
     };
     const aiPlaceToken = (id) => {
         //get empty cells as we will check against these for randoms.
-        let empties = [];
+        let corners = [];
+        let edges = [];
         for(let i=0; i<grid.length;i++){
             for(let j=0; j<grid[i].length;j++){
                 if(grid[i][j] == ""){
-                    empties.push([i,j,classifyCell(i,j)]);
+                    if(classifyCell(i,j).class == "corner"){
+                        corners.push([i,j]);
+                    } else if(classifyCell(i,j).class == "edge"){
+                        edges.push([i,j]);
+                    }
                 }
             }
         }
@@ -231,20 +236,12 @@ const Gameboard = (() => {
         switch (id) {
            //FIX THIS OR WONT WORK - Trying to get random class of cell from array to play. Need to change make decsion ai function too.
             case "corner":
-                for(let i=0;i<empties.length;i++){
-                    if(empties[i][2].class == id){
-                        grid[empties[i][0]][empties[i][1]] = DisplayController.getPlayerTurn();
-                        break;
-                    }
-                };
+                let randomCorner = corners[Math.floor(Math.random() * Math.floor(corners.length))];
+                grid[randomCorner[0]][randomCorner[1]] = DisplayController.getPlayerTurn();
                 break;
             case "edge":
-                for(let i=0;i<empties.length;i++){
-                    if(empties[i][2].class == id){
-                        grid[empties[i][0]][empties[i][1]] = DisplayController.getPlayerTurn();
-                        break;
-                    }
-                };
+                let randomEdge = edges[Math.floor(Math.random() * Math.floor(edges.length))];
+                grid[randomEdge[0]][randomEdge[1]] = DisplayController.getPlayerTurn();
                 break;
             case "middle":
                 grid[1][1] = DisplayController.getPlayerTurn();
@@ -293,7 +290,7 @@ const Gameboard = (() => {
             ranGrey = (Math.random() * (0.6 - 0.3) + 0.3).toFixed(2);
             cell.style.backgroundColor = `rgb(0,0,0,${ranGrey})`;
         });
-
+        renderBoard();
     }
     const checkWin = (xory) => {
         //REFACTOR WITH FUNCTIONAL MAP OR FILTER?
