@@ -1,5 +1,6 @@
 const PlayerFactory = (xory) => {
     let isTurn = false;
+
     //this is never read but useful to have for future dev.
     const token = xory;
 
@@ -18,31 +19,7 @@ const aiFactory = (xory) => {
 
     const toggleTurn = bool => isTurn = bool;
     const getTurn = () => isTurn;
-    const queryMemory = (xory, id) => {
-        if(xory == "X"){
-            for(let i=0; i<xMemory.length;i++){
-                if(id[0] == xMemory[i][0] && id[1] == xMemory[i][1]){
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            for(let i=0; i<oMemory.length;i++){
-                if(id[0] == oMemory[i][0] && id[1] == oMemory[i][1]){
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
-    const clearMemory = () => {
-        oMemory = [];
-        xMemory = [];
-    }
-    //primarily a debugging tool
-    const queryAllMemory = () => {
-        return {oMemory, xMemory};
-    };
+
     const playEdge = () =>{
         console.log("I Played a Random Edge on Turn " + Gameboard.getTurnCount());
         Gameboard.aiPlaceToken("edge");
@@ -122,7 +99,7 @@ const aiFactory = (xory) => {
         }
 
     };
-    return {toggleTurn, getTurn, makeDecision, queryMemory, clearMemory, queryAllMemory};
+    return {toggleTurn, getTurn, makeDecision};
 }
 
 const Gameboard = (() => {
@@ -403,20 +380,6 @@ const DisplayController = (() => {
         aiBtn.classList = "showBtn";
         humanBtn.classList = "hideBtn";
     }
-    const askAI = (query, data) => {
-        switch (query) {
-            case "xmemory":
-                return playerAI.queryMemory("X", data);
-                break;
-            case "omemory":
-                return playerAI.queryMemory("O", data)
-                break;
-            case "memory":
-                //this is just for debug
-                return playerAI.queryAllMemory();
-                break;
-        }
-    }
 
     //Make Player Objects
     const playerX = PlayerFactory("X");
@@ -425,7 +388,7 @@ const DisplayController = (() => {
 
     //Initial Setup
     setup();
-    return{changeTurn, announceWin, getPlayerTurn, askAI};
+    return{changeTurn, announceWin, getPlayerTurn};
 })();
 
 
