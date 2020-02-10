@@ -101,7 +101,6 @@ const Gameboard = (() => {
     let overlay = document.getElementById("winOverlay");
     let turnCounter = 1;
     let lastPlayerLocation = [];
-    let lastAILocation = [];
 
     const classifyCell = (y, x) => {
         let cell = {};
@@ -147,9 +146,6 @@ const Gameboard = (() => {
         return empties[Math.floor(Math.random() * Math.floor(empties.length))];
     };
     const getLastPlayerLocation = () =>{
-        return lastPlayerLocation;
-    };
-    const getLastAILocation = () =>{
         return lastPlayerLocation;
     };
     const checkBlockOrWin = (xory) => {
@@ -217,28 +213,23 @@ const Gameboard = (() => {
         }
         //Where does the ai want to play? Defaults to exact location, else will ask for random class (corner)
         switch (id) {
-           //FIX THIS OR WONT WORK - Trying to get random class of cell from array to play. Need to change make decsion ai function too.
             case "corner":
                 let randomCorner = corners[Math.floor(Math.random() * Math.floor(corners.length))];
                 grid[randomCorner[0]][randomCorner[1]] = DisplayController.getPlayerTurn();
-                lastAILocation = classifyCell(randomCorner[0],randomCorner[1]);
                 break;
             case "edge":
                 let randomEdge = edges[Math.floor(Math.random() * Math.floor(edges.length))];
                 grid[randomEdge[0]][randomEdge[1]] = DisplayController.getPlayerTurn();
-                lastAILocation = classifyCell(randomEdge[0],randomEdge[1]);
                 break;
             case "middle":
                 grid[1][1] = DisplayController.getPlayerTurn();
-                lastAILocation = classifyCell(1,1);
                 break;
             default:
                 grid[id[0]][id[1]] = DisplayController.getPlayerTurn();
-                lastAILocation = classifyCell(id[0],id[1]);
         }
         renderBoard();
         turnCounter++;
-        if(checkWin( DisplayController.getPlayerTurn())){
+        if(checkWin(DisplayController.getPlayerTurn())){
             DisplayController.announceWin();
         } else {
             DisplayController.changeTurn();
@@ -250,7 +241,7 @@ const Gameboard = (() => {
             lastPlayerLocation = classifyCell(e.target.dataset.y, e.target.dataset.x);
             renderBoard();
             turnCounter++
-            if(checkWin( DisplayController.getPlayerTurn())){
+            if(checkWin(DisplayController.getPlayerTurn())){
                 DisplayController.announceWin();
             } else {
                 DisplayController.changeTurn();
@@ -278,38 +269,43 @@ const Gameboard = (() => {
             cell.style.backgroundColor = `rgb(0,0,0,${ranGrey})`;
         });
         renderBoard();
-    }
+    };
     const checkWin = (xory) => {
-        //REFACTOR WITH FUNCTIONAL MAP OR FILTER?
         let gameOver = false;
+        let locations = [];
 
-        lineCheck([[0,0],[0,1],[0,2]]);
-        lineCheck([[1,0],[1,1],[1,2]]);
-        lineCheck([[2,0],[2,1],[2,2]]);
-        lineCheck([[0,0],[1,0],[2,0]]);
-        lineCheck([[0,1],[1,1],[2,1]]);
-        lineCheck([[0,2],[1,2],[2,2]]);
-        lineCheck([[0,0],[1,1],[2,2]]);
-        lineCheck([[0,2],[1,1],[2,0]]);
-        
-
-        function lineCheck(cells){
-            if (grid[cells[0][0]][cells[0][1]] == xory &&
-                grid[cells[1][0]][cells[1][1]] == xory &&
-                grid[cells[2][0]][cells[2][1]] == xory){
-                gameOver = true;
-            };
-        }
-        if(turnCounter == 10){
+        if(turnCounter < 6){
+            return gameOver;
+        } else if(turnCounter == 10){
             gameOver = true;
+            return gameOver;
         }
-        return gameOver == true ? true : false;
+
+        for(let i=0; i<grid.length;i++){
+            for(let j=0; j<grid[i].length;j++){
+                if(grid[i][j] == xory){
+                    locations.push([i,j]);
+                }
+            }
+        }
+
+        for(let i=0; i<locations.length; i++){
+            let cellToCheck = checkNeighbours(locations[i][0],locations[i][1],xory)
+            if(cellToCheck == false){
+                continue;
+            } else if(grid[cellToCheck[0]][cellToCheck[1]] == xory){
+                gameOver = true;
+                break;
+            }
+        }
+
+        return gameOver;
     };
     const getTurnCount = () => {
         return turnCounter;
-    }
+    };
 
-    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin, getTurnCount, getLastPlayerLocation, getRandomEmptyCell, getLastAILocation};
+    return{renderBoard, placeToken, resetBoard, toggleOverlay, aiPlaceToken, checkBlockOrWin, getTurnCount, getLastPlayerLocation, getRandomEmptyCell};
 })();
 
 const DisplayController = (() => {
@@ -371,7 +367,7 @@ const DisplayController = (() => {
         Gameboard.resetBoard();
         aiBtn.classList = "showBtn";
         humanBtn.classList = "hideBtn";
-    }
+    };
 
     //Make Player Objects
     const playerX = PlayerFactory("X");
@@ -382,7 +378,3 @@ const DisplayController = (() => {
     setup();
     return{changeTurn, announceWin, getPlayerTurn};
 })();
-
-
-//Gameboard Main Loop function to return a request but its only one that loops.
-//

@@ -13,3 +13,26 @@
         Once you’ve gotten that, work on making the computer smart. It is possible to create an unbeatable AI using the minimax algorithm (read about it here, some googling will help you out with this one)
         If you get this running definitely come show it off in the chatroom. It’s quite an accomplishment!
 
+
+
+
+Old Check Win Code:
+        // lineCheck([[0,0],[0,1],[0,2]]);
+        // lineCheck([[1,0],[1,1],[1,2]]);
+        // lineCheck([[2,0],[2,1],[2,2]]);
+        // lineCheck([[0,0],[1,0],[2,0]]);
+        // lineCheck([[0,1],[1,1],[2,1]]);
+        // lineCheck([[0,2],[1,2],[2,2]]);
+        // lineCheck([[0,0],[1,1],[2,2]]);
+        // lineCheck([[0,2],[1,1],[2,0]]);
+
+        // // 123, 456, 789, 147, 258, 369, 159, 357
+        
+
+        // function lineCheck(cells){
+        //     if (grid[cells[0][0]][cells[0][1]] == xory &&
+        //         grid[cells[1][0]][cells[1][1]] == xory &&
+        //         grid[cells[2][0]][cells[2][1]] == xory){
+        //         gameOver = true;
+        //     }
+        // }
