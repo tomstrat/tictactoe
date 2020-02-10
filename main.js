@@ -9,16 +9,10 @@ const PlayerFactory = (xory) => {
     return {toggleTurn, getTurn};
 };
 
-//This could inherit from PlayerFactory 
 const aiFactory = (xory) => {
-    let isTurn = false;
-    const token = xory;
-    let oMemory = [];
-    let xMemory = [];
+    //Inherits PlayerFactory
+    let prototype = PlayerFactory(xory);
     let firstTurn = "";
-
-    const toggleTurn = bool => isTurn = bool;
-    const getTurn = () => isTurn;
 
     const playEdge = () =>{
         console.log("I Played a Random Edge on Turn " + Gameboard.getTurnCount());
@@ -56,7 +50,6 @@ const aiFactory = (xory) => {
         //Check next if a block is needed to survive
         if(blockWhere = Gameboard.checkBlockOrWin("X")){
             console.log("I Blocked " + blockWhere[0] + ", " + blockWhere[1])
-            oMemory.push([blockWhere[0],blockWhere[1]]);
             Gameboard.aiPlaceToken(blockWhere);
             return;
         };
@@ -99,7 +92,7 @@ const aiFactory = (xory) => {
         }
 
     };
-    return {toggleTurn, getTurn, makeDecision};
+    return Object.assign({}, prototype, {makeDecision});
 }
 
 const Gameboard = (() => {
@@ -329,7 +322,6 @@ const DisplayController = (() => {
     const setup = () => {
         Gameboard.resetBoard();
         Gameboard.renderBoard();
-        playerAI.clearMemory();
         resetBtn.addEventListener("click", setup);
         aiBtn.addEventListener("click", makeAiGame);
         humanBtn.addEventListener("click",makeHumanGame);
