@@ -357,6 +357,9 @@ const DisplayController = (() => {
     };
     const makeAiGame = () => {
         aiGame = true;
+        if(getPlayerTurn() == "O"){
+            changeTurn();
+        }
         Gameboard.resetBoard();
         aiBtn.classList = "hideBtn";
         humanBtn.classList = "showBtn";
