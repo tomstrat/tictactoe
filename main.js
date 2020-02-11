@@ -13,7 +13,20 @@ const aiFactory = (xory) => {
     //Inherits PlayerFactory
     let prototype = PlayerFactory(xory);
     let firstTurn = "";
+    let difficulty = 6;
 
+    const changeDifficulty = (scale) => {
+        switch(scale){
+            case "increase":
+                difficulty += difficulty < 10 ? 1 : 0;
+                console.log(`my difficulty raised to ${difficulty}`);
+                break;
+            case "decrease":
+                difficulty -= difficulty > 1 ? 1 : 0;
+                console.log(`my difficulty lowered to ${difficulty}`);
+                break;
+        }
+    };
     const playEdge = () =>{
         console.log("I Played a Random Edge on Turn " + Gameboard.getTurnCount());
         Gameboard.aiPlaceToken("edge");
@@ -32,7 +45,6 @@ const aiFactory = (xory) => {
   
         //Random Roulette -- Add raising difficulty based on wins and losses?
         //Difficulty out of 10. 10 being cant lose and 0 being all bets are off.
-        let difficulty = 8;
         if(Math.floor(Math.random() * 10) > difficulty){
             let randomPlay = Gameboard.getRandomEmptyCell();
             Gameboard.aiPlaceToken(randomPlay);
@@ -92,7 +104,7 @@ const aiFactory = (xory) => {
         }
 
     };
-    return Object.assign({}, prototype, {makeDecision});
+    return Object.assign({}, prototype, {makeDecision, changeDifficulty});
 }
 
 const Gameboard = (() => {
@@ -231,7 +243,9 @@ const Gameboard = (() => {
         turnCounter++;
         if(checkWin(DisplayController.getPlayerTurn())){
             DisplayController.announceWin();
-        } else {
+        } else if(turnCounter == 10){
+            DisplayController.announceWin("draw");
+        }else {
             DisplayController.changeTurn();
         }
     };
@@ -243,7 +257,9 @@ const Gameboard = (() => {
             turnCounter++
             if(checkWin(DisplayController.getPlayerTurn())){
                 DisplayController.announceWin();
-            } else {
+            } else if(turnCounter == 10){
+                DisplayController.announceWin("draw");
+            }else {
                 DisplayController.changeTurn();
             }
         } else {
@@ -275,9 +291,6 @@ const Gameboard = (() => {
         let locations = [];
 
         if(turnCounter < 6){
-            return gameOver;
-        } else if(turnCounter == 10){
-            gameOver = true;
             return gameOver;
         }
 
@@ -345,11 +358,17 @@ const DisplayController = (() => {
             docXory.innerHTML = "X";
         }
     };
-    const announceWin = (winner) => {
-        if(Gameboard.getTurnCount() == 10){
+    const announceWin = (isDraw) => {
+        if(isDraw == "draw"){
             Gameboard.toggleOverlay(true, "Draw")
+            playerAI.changeDifficulty("decrease");
         } else {
             Gameboard.toggleOverlay(true, getPlayerTurn());
+            if(getPlayerTurn() == "O"){
+                playerAI.changeDifficulty("decrease");
+            } else {
+                playerAI.changeDifficulty("increase");
+            }
         }
     };
     const getPlayerTurn = () => {
